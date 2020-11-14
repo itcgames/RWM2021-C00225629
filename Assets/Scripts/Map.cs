@@ -64,4 +64,27 @@ public class Map
         }
         return count;
     }
+
+    public bool AddEntityID(Pair<int,int> t_tileIndex, int t_entityID)
+    {
+        bool success = false;
+
+        success = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].AddEntityID(t_entityID);
+
+        return success;
+    }
+
+    public bool RemoveEntityID(Pair<int, int> t_tileIndex, int t_entityID)
+    {
+        bool success = false;
+
+        success = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].DeleteEntityID(t_entityID);
+
+        return success;
+    }
+
+    public List<int> GetEntityIDs(Pair<int, int> t_tileIndex)
+    {
+        return m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].GetIDList();
+    }
 }
