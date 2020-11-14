@@ -14,7 +14,7 @@ public class TileSuite
         tile = new Tile();
     }
 
-    // 1
+    //Test For Task 1
     [UnityTest]
     public IEnumerator TileIndex()
     {
@@ -27,7 +27,7 @@ public class TileSuite
         yield return new WaitForSeconds(0.1f);
     }
 
-    // 2
+    //Test For Task 1
     [UnityTest]
     public IEnumerator TileEntityIDList()
     {
