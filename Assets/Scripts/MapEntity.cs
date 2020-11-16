@@ -17,8 +17,7 @@ public class MapEntity : MonoBehaviour
 
     int m_id;
 
-    //Start is called before the first frame update.
-    void Start()
+    void Awake()
     {
         m_id = s_nextID;
 

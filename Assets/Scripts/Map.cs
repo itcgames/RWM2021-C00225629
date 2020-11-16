@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Map
+public class Map : MonoBehaviour
 {
     int m_width = 0;
     int m_hight = 0;
@@ -68,6 +68,24 @@ public class Map
     public bool AddEntityID(Pair<int,int> t_tileIndex, int t_entityID)
     {
         bool success = false;
+
+        List<int> idList = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].GetIDList();
+        
+        MapEntity[] enteties = FindObjectsOfType<MapEntity>();
+
+        foreach (MapEntity entity in enteties)
+        {
+            foreach(int id in idList)
+            {
+                if(entity.GetID() == id)
+                {
+                    if(entity.GetEntityType() == EntityType.OBJECT)
+                    {
+                        return success;
+                    }
+                }
+            }
+        }
 
         success = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].AddEntityID(t_entityID);
 
