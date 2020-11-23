@@ -29,17 +29,20 @@ public class TileSuite
 
     //Test For Task 1
     [UnityTest]
-    public IEnumerator TileEntityIDList()
+    public IEnumerator TileEntityList()
     {
-        Assert.True(tile.AddEntityID(5));
+        GameObject mapObject = new GameObject();
+        mapObject.tag = "Object";
 
-        List<int> list = tile.GetIDList();
+        Assert.True(tile.AddEntity(mapObject));
+
+        List<GameObject> list = tile.GetEntityList();
 
         Assert.True(list.Count == 1);
-        Assert.True(list.Contains(5));
+        Assert.True(list.Contains(mapObject));
 
-        Assert.True(tile.DeleteEntityID(5));
-        Assert.False(tile.DeleteEntityID(5));
+        Assert.True(tile.DeleteEntity(mapObject));
+        Assert.False(tile.DeleteEntity(mapObject));
 
         yield return new WaitForSeconds(0.1f);
     }

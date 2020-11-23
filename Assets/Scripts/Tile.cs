@@ -5,7 +5,8 @@ using UnityEngine;
 public class Tile
 {
     private Pair<int, int> m_indexPos = null;
-    private List<int> m_entityIDs = new List<int>();
+    private List<GameObject> m_entities = new List<GameObject>();
+    bool m_isTraversable = true;
 
     public void SetIndexPos(Pair<int,int> t_newIndexPos)
     {
@@ -17,30 +18,40 @@ public class Tile
         return m_indexPos;
     }
 
-    public bool AddEntityID(int t_entityID)
+    public bool AddEntity(GameObject t_gameObject)
     {
-        if(!m_entityIDs.Contains(t_entityID))
+        if(!m_entities.Contains(t_gameObject))
         {
-            m_entityIDs.Add(t_entityID);
+            m_entities.Add(t_gameObject);
             return true;
         }
 
         return false;
     }
 
-    public bool DeleteEntityID(int t_entityID)
+    public bool DeleteEntity(GameObject t_gameObject)
     {
-        if (m_entityIDs.Contains(t_entityID))
+        if (m_entities.Contains(t_gameObject))
         {
-            m_entityIDs.Remove(t_entityID);
+            m_entities.Remove(t_gameObject);
             return true;
         }
 
         return false;
     }
 
-    public List<int> GetIDList()
+    public void SetIsTraversable(bool t_isTraversable)
     {
-        return m_entityIDs;
+        m_isTraversable = t_isTraversable;
+    }
+
+    public bool GetIsTraversable()
+    {
+        return m_isTraversable;
+    }
+
+    public List<GameObject> GetEntityList()
+    {
+        return m_entities;
     }
 }
