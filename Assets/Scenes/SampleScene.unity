@@ -1092,5 +1092,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestLevel
       objectReference: {fileID: 0}
+    - target: {fileID: 4308206571880183919, guid: 0a50a26327f2b3b4a8fbe77ad0bdfd2b,
+        type: 3}
+      propertyPath: m_width
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a50a26327f2b3b4a8fbe77ad0bdfd2b, type: 3}
