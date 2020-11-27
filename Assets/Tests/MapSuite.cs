@@ -49,15 +49,15 @@ public class MapSuite
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapObject));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject));
 
         List<GameObject> entityList = new List<GameObject>();
 
-        entityList = m_mapScript.GetEntity(new Pair<int, int>(0, 0));
+        entityList = m_mapScript.GetEntity(new MapIndex(0, 0));
 
         Assert.True(entityList.Contains(mapObject));
 
-        Assert.True(m_mapScript.RemoveEntity(new Pair<int, int>(0, 0), mapObject));
+        Assert.True(m_mapScript.RemoveEntity(new MapIndex(0, 0), mapObject));
 
         Assert.False(entityList.Contains(mapObject));
 
@@ -75,15 +75,15 @@ public class MapSuite
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapChar));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapChar));
 
         List<GameObject> entityList = new List<GameObject>();
 
-        entityList = m_mapScript.GetEntity(new Pair<int, int>(0, 0));
+        entityList = m_mapScript.GetEntity(new MapIndex(0, 0));
 
         Assert.True(entityList.Contains(mapChar));
 
-        Assert.True(m_mapScript.RemoveEntity(new Pair<int, int>(0, 0), mapChar));
+        Assert.True(m_mapScript.RemoveEntity(new MapIndex(0, 0), mapChar));
 
         Assert.False(entityList.Contains(mapChar));
 
@@ -101,13 +101,13 @@ public class MapSuite
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), charEntity));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), charEntity));
 
         List<GameObject> entityList = new List<GameObject>();
 
-        Assert.True(m_mapScript.RemoveEntity(new Pair<int, int>(0, 0), charEntity));
+        Assert.True(m_mapScript.RemoveEntity(new MapIndex(0, 0), charEntity));
 
-        Assert.False(m_mapScript.RemoveEntity(new Pair<int, int>(0, 0), charEntity));
+        Assert.False(m_mapScript.RemoveEntity(new MapIndex(0, 0), charEntity));
 
         Assert.False(entityList.Contains(charEntity));
 
@@ -125,16 +125,16 @@ public class MapSuite
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapCharacter));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapCharacter));
 
         GameObject mapObject = new GameObject();
         mapObject.tag = "Object";
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapObject));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject));
 
-        Assert.True(m_mapScript.RemoveEntity(new Pair<int, int>(0, 0), mapCharacter));
+        Assert.True(m_mapScript.RemoveEntity(new MapIndex(0, 0), mapCharacter));
 
-        Assert.False(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapCharacter));
+        Assert.False(m_mapScript.AddEntity(new MapIndex(0, 0), mapCharacter));
 
         yield return new WaitForSeconds(0.1f);
     }
@@ -150,13 +150,13 @@ public class MapSuite
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
 
-        Assert.True(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapObject));
+        Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject));
 
         GameObject mapObject2 = new GameObject();
         mapObject2.tag = "Object";
         yield return new WaitForSeconds(0.1f);
 
-        Assert.False(m_mapScript.AddEntity(new Pair<int, int>(0, 0), mapObject2));
+        Assert.False(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject2));
 
         yield return new WaitForSeconds(0.1f);
     }

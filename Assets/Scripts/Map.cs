@@ -2,6 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public struct MapIndex
+{
+    public int m_xIndex;
+    public int m_yIndex;
+
+    public MapIndex(int t_xIndex, int t_yIndex)
+    {
+        m_xIndex = t_xIndex;
+        m_yIndex = t_yIndex;
+    }
+
+    public MapIndex(MapIndex t_mapIndex)
+    {
+        m_xIndex = t_mapIndex.m_xIndex;
+        m_yIndex = t_mapIndex.m_yIndex;
+    }
+}
+
 public class Map : MonoBehaviour
 {
     [Range(1, 1000)]
@@ -54,7 +73,7 @@ public class Map : MonoBehaviour
                 for (int y = 0; y < m_hight; y++)
                 {
                     Tile newTile = new Tile();
-                    newTile.SetIndexPos(new Pair<int, int>(x, y));
+                    newTile.SetIndexPos(new MapIndex(x, y));
 
                     col.Add(newTile);
                 }
@@ -84,21 +103,21 @@ public class Map : MonoBehaviour
     public void FixedUpdate()
     {
         //List for a quick way to get each corner of the collider.
-        List<Pair<int, int>> cornerList = new List<Pair<int, int>>();
-        cornerList.Add(new Pair<int, int>(-1, -1));
-        cornerList.Add(new Pair<int, int>(1, -1));
-        cornerList.Add(new Pair<int, int>(1, 1));
-        cornerList.Add(new Pair<int, int>(-1, 1));
+        List<MapIndex> cornerList = new List<MapIndex>();
+        cornerList.Add(new MapIndex(-1, -1));
+        cornerList.Add(new MapIndex(1, -1));
+        cornerList.Add(new MapIndex(1, 1));
+        cornerList.Add(new MapIndex(-1, 1));
 
         foreach(GameObject entity in m_mapEnteties)
         {
             if (entity.tag == m_charTag)
             {
                 //List of the tiles the character was previously.
-                List<Pair<int, int>> prevOccupiedTiles = GetTilesWithEntity(entity);
+                List<MapIndex> prevOccupiedTiles = GetTilesWithEntity(entity);
 
                 //List of the tiles the character is going to be in now.
-                List<Pair<int, int>> newOccupiedTiles = new List<Pair<int, int>>();
+                List<MapIndex> newOccupiedTiles = new List<MapIndex>();
 
                 //Collider of character used to check for change in tile.
                 RectangularCollider collider = entity.GetComponent<RectangularCollider>();
@@ -116,48 +135,48 @@ public class Map : MonoBehaviour
                     Vector2 cornerPos;
 
                     //Index position of the corner within the map.
-                    Pair<int, int> cornerMapIndex;
+                    MapIndex cornerMapIndex;
 
                     //Check each corner for the position with the world and the map.
-                    foreach (Pair<int, int> corner in cornerList)
+                    foreach (MapIndex corner in cornerList)
                     {
-                        cornerPos = collider.m_pos + new Vector2(corner.m_first * collider.m_width / 2, corner.m_second * collider.m_hight / 2);
+                        cornerPos = collider.m_pos + new Vector2(corner.m_xIndex * collider.m_width / 2, corner.m_yIndex * collider.m_hight / 2);
                         
-                        cornerMapIndex = new Pair<int, int>((int)(cornerPos.x / tileSize), (int)(cornerPos.y / tileSize));
+                        cornerMapIndex = new MapIndex((int)(cornerPos.x / tileSize), (int)(cornerPos.y / tileSize));
 
                         //When position goes into negative it is assumed it goes to negative index number 
                         //thus it needs to be adjusted.
                         if(cornerPos.x < 0)
                         {
-                            cornerMapIndex.m_first -= 1;
+                            cornerMapIndex.m_xIndex -= 1;
                         }
 
                         if(cornerPos.y < 0)
                         {
-                            cornerMapIndex.m_second -= 1;
+                            cornerMapIndex.m_yIndex -= 1;
                         }
 
                         //Check if we are not checking a tile that we are already in as that would make us be stuck in that tile for
                         //ever is something was spawned in that tile.
-                        if(cornerMapIndex.m_first >= 0 && cornerMapIndex.m_first < m_width && 
-                            cornerMapIndex.m_second >= 0 && cornerMapIndex.m_second < m_hight)
+                        if(cornerMapIndex.m_xIndex >= 0 && cornerMapIndex.m_xIndex < m_width && 
+                            cornerMapIndex.m_yIndex >= 0 && cornerMapIndex.m_yIndex < m_hight)
                         {
-                            if (!m_mapGrid[cornerMapIndex.m_first][cornerMapIndex.m_second].GetEntityList().Contains(entity))
+                            if (!m_mapGrid[cornerMapIndex.m_xIndex][cornerMapIndex.m_yIndex].GetEntityList().Contains(entity))
                             {
                                 //Check if the tile is traversable.
-                                if (!m_mapGrid[cornerMapIndex.m_first][cornerMapIndex.m_second].GetIsTraversable())
+                                if (!m_mapGrid[cornerMapIndex.m_xIndex][cornerMapIndex.m_yIndex].GetIsTraversable())
                                 {
                                     //The tile is not traversable and thus collsion has been detected.
                                     collisionDetected = true;
                                 }
                                 else
                                 {
-                                    newOccupiedTiles.Add(new Pair<int, int>(cornerMapIndex.m_first, cornerMapIndex.m_second));
+                                    newOccupiedTiles.Add(new MapIndex(cornerMapIndex));
                                 }
                             }
                             else
                             {
-                                newOccupiedTiles.Add(new Pair<int, int>(cornerMapIndex.m_first, cornerMapIndex.m_second));
+                                newOccupiedTiles.Add(new MapIndex(cornerMapIndex));
                             }
                         }
                         else
@@ -171,17 +190,17 @@ public class Map : MonoBehaviour
                     //Check if the collision has been detected.
                     if (!collisionDetected && !outOfBounds)
                     {
-                        foreach (Pair<int, int> indexPos in prevOccupiedTiles)
+                        foreach (MapIndex indexPos in prevOccupiedTiles)
                         {
                             if (!newOccupiedTiles.Contains(indexPos))
                             {
-                                m_mapGrid[indexPos.m_first][indexPos.m_second].DeleteEntity(entity);
+                                m_mapGrid[indexPos.m_xIndex][indexPos.m_yIndex].DeleteEntity(entity);
                             }
                         }
 
-                        foreach (Pair<int, int> indexPos in newOccupiedTiles)
+                        foreach (MapIndex indexPos in newOccupiedTiles)
                         {
-                            m_mapGrid[indexPos.m_first][indexPos.m_second].AddEntity(entity);
+                            m_mapGrid[indexPos.m_xIndex][indexPos.m_yIndex].AddEntity(entity);
                         }
                     }
                     else if(outOfBounds)
@@ -199,9 +218,9 @@ public class Map : MonoBehaviour
         }
     }
 
-    List<Pair<int, int>> GetTilesWithEntity(GameObject t_entity)
+    List<MapIndex> GetTilesWithEntity(GameObject t_entity)
     {
-        List<Pair<int, int>> listOccupiedTiles = new List<Pair<int, int>>();
+        List<MapIndex> listOccupiedTiles = new List<MapIndex>();
 
         for (int x = 0; x < m_width; x++)
         {
@@ -209,18 +228,18 @@ public class Map : MonoBehaviour
             {
                 if(m_mapGrid[x][y].GetEntityList().Contains(t_entity))
                 {
-                    listOccupiedTiles.Add(new Pair<int, int>(x, y));
+                    listOccupiedTiles.Add(new MapIndex(x, y));
                 }
             }
         }
         return listOccupiedTiles;
     }
 
-    public bool AddEntity(Pair<int,int> t_tileIndex, GameObject t_entity)
+    public bool AddEntity(MapIndex t_tileIndex, GameObject t_entity)
     {
         bool success = false;
 
-        List<GameObject> entityList = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].GetEntityList();
+        List<GameObject> entityList = m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].GetEntityList();
 
         foreach (GameObject entity in entityList)
         {
@@ -230,31 +249,31 @@ public class Map : MonoBehaviour
             }
         }
 
-        success = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].AddEntity(t_entity);
+        success = m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].AddEntity(t_entity);
 
         if(success)
         {
             if(t_entity.tag == m_objectTag)
             {
                 //The tile now contains an entity of type object meaning a character can no longer enter this tile.
-                m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].SetIsTraversable(false);
+                m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].SetIsTraversable(false);
             }
         }
 
         return success;
     }
 
-    public bool RemoveEntity(Pair<int, int> t_tileIndex, GameObject t_entity)
+    public bool RemoveEntity(MapIndex t_tileIndex, GameObject t_entity)
     {
         bool success = false;
 
-        success = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].DeleteEntity(t_entity);
+        success = m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].DeleteEntity(t_entity);
 
         if (success)
         {
             bool containsObject = false;
 
-            List<GameObject> entityList = m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].GetEntityList();
+            List<GameObject> entityList = m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].GetEntityList();
 
             foreach (GameObject entity in entityList)
             {
@@ -267,15 +286,15 @@ public class Map : MonoBehaviour
             //The tile no longer contains an entity of type object meaning a character can enter this tile.
             if(!containsObject)
             {
-                m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].SetIsTraversable(true);
+                m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].SetIsTraversable(true);
             }
         }
 
         return success;
     }
 
-    public List<GameObject> GetEntity(Pair<int, int> t_tileIndex)
+    public List<GameObject> GetEntity(MapIndex t_tileIndex)
     {
-        return m_mapGrid[t_tileIndex.m_first][t_tileIndex.m_second].GetEntityList();
+        return m_mapGrid[t_tileIndex.m_xIndex][t_tileIndex.m_yIndex].GetEntityList();
     }
 }

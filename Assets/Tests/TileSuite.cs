@@ -18,7 +18,7 @@ public class TileSuite
     [UnityTest]
     public IEnumerator TileIndex()
     {
-        Pair<int, int> indexPos = new Pair<int, int>(1, 5);
+        MapIndex indexPos = new MapIndex(1, 5);
 
         tile.SetIndexPos(indexPos);
 

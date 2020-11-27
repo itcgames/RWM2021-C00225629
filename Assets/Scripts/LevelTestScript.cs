@@ -8,19 +8,19 @@ public class LevelTestScript : MonoBehaviour
     public GameObject objectPrefab;
     public GameObject charPrefab;
 
+    [HideInInspector]
     public GameObject charEntity;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         map.CreateMap();
 
         charEntity = Instantiate(charPrefab, new Vector2(0.48f, 0.48f), Quaternion.identity);
-        map.AddEntity(new Pair<int, int>(1, 1), charEntity);
+        map.AddEntity(new MapIndex(1, 1), charEntity);
         map.AddEntityToList(charEntity);
 
         GameObject objectEntity = Instantiate(objectPrefab, new Vector2(0.16f, 0.48f), Quaternion.identity);
-        map.AddEntity(new Pair<int, int>(0, 1), objectEntity);
+        map.AddEntity(new MapIndex(0, 1), objectEntity);
         map.AddEntityToList(objectEntity);
     }
 }

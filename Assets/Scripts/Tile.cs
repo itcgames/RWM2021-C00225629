@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Tile
 {
-    private Pair<int, int> m_indexPos = null;
+    private MapIndex m_indexPos;
     private List<GameObject> m_entities = new List<GameObject>();
     bool m_isTraversable = true;
 
-    public void SetIndexPos(Pair<int,int> t_newIndexPos)
+    public void SetIndexPos(MapIndex t_newIndexPos)
     {
         m_indexPos = t_newIndexPos;
     }
 
-    public Pair<int,int> GetIndexPos()
+    public MapIndex GetIndexPos()
     {
         return m_indexPos;
     }
