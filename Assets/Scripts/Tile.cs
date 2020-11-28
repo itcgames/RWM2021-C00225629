@@ -2,11 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile
+public class Tile : MonoBehaviour
 {
     private MapIndex m_indexPos;
     private List<GameObject> m_entities = new List<GameObject>();
+    private SpriteRenderer m_spriteRenderer = null;
+    private Sprite m_sprite = null;
     bool m_isTraversable = true;
+
+    private void Awake()
+    {
+        m_spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void SetSprite(string t_spritePath)
+    {
+        m_sprite = Resources.Load<Sprite>(t_spritePath);
+
+        m_spriteRenderer.sprite = m_sprite;
+    }
 
     public void SetIndexPos(MapIndex t_newIndexPos)
     {
