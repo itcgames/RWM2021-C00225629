@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RectangularCollider : MonoBehaviour
+//This is a sample rectangular collider used for testing the collision
+//and out of bounds within the map.
+public class TestCollider : MonoBehaviour
 {
     public float m_width = 0.30f;
     public float m_hight = 0.30f;

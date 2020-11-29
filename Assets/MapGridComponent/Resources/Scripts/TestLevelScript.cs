@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelTestScript : MonoBehaviour
+public class TestLevelScript : MonoBehaviour
 {
     public Map map;
     public GameObject objectPrefab;

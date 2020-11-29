@@ -7,11 +7,15 @@ using System.Collections.Generic;
 public class TileSuite
 {
     Tile tile;
+    GameObject tileObject;
 
     [SetUp]
     public void Setup()
     {
-        tile = new Tile();
+        tileObject = new GameObject();
+        tileObject.AddComponent<Tile>();
+
+        tile = tileObject.GetComponent<Tile>();
     }
 
     //Test For Task 1
