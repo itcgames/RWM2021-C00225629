@@ -94,7 +94,9 @@ public class Map : MonoBehaviour
     /// </summary>
     public void CreateMap()
     {
-        if(m_mapGrid.Count == 0)
+        m_mapGrid = new List<List<Tile>>();
+
+        if (m_mapGrid.Count == 0)
         {
             for (int x = 0; x < m_width; x++)
             {
@@ -128,7 +130,7 @@ public class Map : MonoBehaviour
         tileObject.AddComponent<SpriteRenderer>();
         tileObject.AddComponent<Tile>();
 
-        tileObject.transform.parent = this.transform;
+        tileObject.transform.parent = transform;
 
         Tile newTile = tileObject.GetComponent<Tile>();
         newTile.SetIndexPos(t_mapIndex);
@@ -146,8 +148,7 @@ public class Map : MonoBehaviour
     /// <returns>The string to the spirte asset location within the resources folder</returns>
     string LoadTileSprite(MapIndex t_mapIndex)
     {
-        //Implement logic here for load sprites for individual tiles.
-        return "Sprites/tile";
+        return "Assets/Resources/MapGridComponent/Sprites/tile.png"; ;
     }
 
     /// <summary>
