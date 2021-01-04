@@ -36,8 +36,8 @@ public class Map : MonoBehaviour
     List<GameObject> m_mapEnteties = new List<GameObject>();
 
     public float tileSize = 0.32f;          //The size of a singular tile in pixels.
-    public string m_charTag = "Character";  //The tag used for enteties that move around the map.
-    public string m_objectTag = "Object";   //The tag used for enteties that when placed in a tile prevent other enteties from ever being added to the tile.
+    public List<string> m_charsTag = new List<string>();    //The tags used for entities that move around the map.
+    public List<string> m_objectsTag = new List<string>();  //The tags used for enteties that when placed in a tile prevent other entities from ever being added to the tile.
 
     /// <summary>
     /// Sets the size of the width and hight of the 2D tile grid.
@@ -132,7 +132,7 @@ public class Map : MonoBehaviour
 
         Tile newTile = tileObject.GetComponent<Tile>();
         newTile.SetIndexPos(t_mapIndex);
-        newTile.SetSprite(LoadTileSprite(t_mapIndex));
+        newTile.LoadSprite(LoadTileSprite(t_mapIndex));
 
        return newTile;
     }
@@ -177,12 +177,20 @@ public class Map : MonoBehaviour
         }
     }
 
+    public void RemoveEntityFromList(GameObject t_newEntity)
+    {
+        if (GetTilesWithEntity(t_newEntity).Count == 0)
+        {
+            m_mapEnteties.Remove(t_newEntity);
+        }
+    }
+
     public void FixedUpdate()
     {
         //For loop used to do the characters within the map.
         foreach(GameObject entity in m_mapEnteties)
         {
-            if (entity.tag == m_charTag)
+            if (m_charsTag.Contains(entity.tag))
             {
                 UpdateCharacterInMap(entity);
             }
@@ -340,7 +348,7 @@ public class Map : MonoBehaviour
 
         foreach (GameObject entity in entityList)
         {
-            if(entity.tag == m_objectTag)
+            if (m_objectsTag.Contains(entity.tag))
             {
                 return success;
             }
@@ -350,7 +358,9 @@ public class Map : MonoBehaviour
 
         if(success)
         {
-            if(t_entity.tag == m_objectTag)
+            AddEntityToList(t_entity);
+
+            if (m_objectsTag.Contains(t_entity.tag))
             {
                 //The tile now contains an entity of type object meaning a character can no longer enter this tile.
                 m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].SetIsTraversable(false);
@@ -376,13 +386,15 @@ public class Map : MonoBehaviour
 
         if (success)
         {
+            RemoveEntityFromList(t_entity);
+
             bool containsObject = false;
 
             List<GameObject> entityList = m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
 
             foreach (GameObject entity in entityList)
             {
-                if (entity.tag == m_objectTag)
+                if (m_objectsTag.Contains(t_entity.tag))
                 {
                     containsObject = true;
                 }
@@ -401,5 +413,28 @@ public class Map : MonoBehaviour
     public List<GameObject> GetEntity(MapIndex t_tileIndex)
     {
         return m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
+    }
+
+    public void RemoveEntityFromAllTiles(GameObject t_entity)
+    {
+        List<MapIndex> mapIndexList = GetTilesWithEntity(t_entity);
+
+        foreach (MapIndex mapIndex in mapIndexList)
+        {
+            RemoveEntity(mapIndex, t_entity);
+        }
+    }
+
+    public Tile GetTile(MapIndex m_map)
+    {
+        if (m_map.m_x >= 0 && m_map.m_x < m_width && m_map.m_y >= 0 && m_map.m_y < m_hight)
+        {
+            return m_mapGrid[m_map.m_x][m_map.m_y];
+        }
+
+        else
+        {
+            return null;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Tile : MonoBehaviour
 {
@@ -15,15 +16,23 @@ public class Tile : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the sprite of the sprite renderer componet of the tile object
+    /// Loads the sprite of the sprite renderer componet of the tile object
     /// if the tile object has a sprite render attached to it.
     /// </summary>
     /// <param name="t_spritePath">String for the path to the location of the sprite</param>
-    public void SetSprite(string t_spritePath)
+    public void LoadSprite(string t_spritePath)
     {
-        if(m_spriteRenderer != null)
+        if (m_spriteRenderer != null)
         {
-            m_spriteRenderer.sprite = Resources.Load<Sprite>(t_spritePath);
+            m_spriteRenderer.sprite = AssetDatabase.LoadAssetAtPath(t_spritePath, typeof(Sprite)) as Sprite;
+        }
+    }
+
+    public void SetSprite(Sprite t_sprite)
+    {
+        if (m_spriteRenderer != null)
+        {
+            m_spriteRenderer.sprite = t_sprite;
         }
     }
 

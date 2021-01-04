@@ -48,6 +48,7 @@ public class MapSuite
 
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
+        m_mapScript.m_objectsTag.Add("Object");
 
         Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject));
 
@@ -74,6 +75,8 @@ public class MapSuite
 
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
+        m_mapScript.m_charsTag.Add("Character");
+        m_mapScript.m_objectsTag.Add("Object");
 
         Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapChar));
 
@@ -100,6 +103,8 @@ public class MapSuite
 
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
+        m_mapScript.m_charsTag.Add("Character");
+        m_mapScript.m_objectsTag.Add("Object");
 
         Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), charEntity));
 
@@ -124,6 +129,8 @@ public class MapSuite
 
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
+        m_mapScript.m_charsTag.Add("Character");
+        m_mapScript.m_objectsTag.Add("Object");
 
         Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapCharacter));
 
@@ -149,6 +156,7 @@ public class MapSuite
 
         m_mapScript.SetSize(1, 1);
         m_mapScript.CreateMap();
+        m_mapScript.m_objectsTag.Add("Object");
 
         Assert.True(m_mapScript.AddEntity(new MapIndex(0, 0), mapObject));
 
