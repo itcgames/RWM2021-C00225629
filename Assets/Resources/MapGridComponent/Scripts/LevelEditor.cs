@@ -2,19 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class LevelEditor : MonoBehaviour
 {
     [SerializeField]
     Map m_map;
 
-    public int m_mapWidth = 1;
-    public int m_mapHeight = 1;
+    int m_mapWidth = 1;
+    int m_mapHeight = 1;
+    int m_spriteCount = 0;
 
     public InputField m_widthField;
     public InputField m_heightField;
+    public InputField m_spriteNameField;
 
     public Transform m_cameraTransform;
+
+    public Text m_spriteAddResponse;
+
+    public GameObject m_tileSpriteButtonPrefab;
+
+    public Canvas m_menuCanvas;
+
+    Sprite m_selectedSprite;
 
     private void Update()
     {
@@ -56,5 +67,35 @@ public class LevelEditor : MonoBehaviour
         cameraPos.y = m_mapWidth / 2.0f * m_map.tileSize;
 
         m_cameraTransform.position = cameraPos;
+    }
+
+    public void ClearAddResponseText()
+    {
+        m_spriteAddResponse.text = "";
+    }
+
+    public void LoadTileBackground()
+    {
+       string path = "Assets/Resources/MapGridComponent/Sprites/" + m_spriteNameField.text;
+
+       Sprite sprite = AssetDatabase.LoadAssetAtPath(path, typeof(Sprite)) as Sprite;
+
+        if(sprite != null)
+        {
+            m_spriteCount++;
+
+            GameObject tileButton = Instantiate(m_tileSpriteButtonPrefab, m_menuCanvas.transform);
+            tileButton.transform.SetParent(m_menuCanvas.transform);
+            tileButton.transform.position += new Vector3(60 * ((m_spriteCount - 1) % 2), -60 * ((m_spriteCount - 1) / 2), 0);
+            tileButton.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
+
+            m_spriteAddResponse.text = "Sprite Has Been Added!";
+            m_spriteAddResponse.color = Color.green;
+        }
+        else
+        {
+            m_spriteAddResponse.text = "Error Sprite Not Found!";
+            m_spriteAddResponse.color = Color.red;
+        }
     }
 }
