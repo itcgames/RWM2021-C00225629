@@ -132,6 +132,7 @@ public class LevelEditor : MonoBehaviour
     public void ClearAddResponseText()
     {
         m_spriteAddResponse.text = "";
+
         m_prefabAddResponse.text = ""; 
     }
 
