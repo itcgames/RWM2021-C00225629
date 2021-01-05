@@ -20,8 +20,10 @@ public class LevelEditor : MonoBehaviour
     public Transform m_cameraTransform;
 
     public Text m_spriteAddResponse;
+    public Text m_selectedText;
 
     public GameObject m_tileSpriteButtonPrefab;
+    public GameObject m_cancelButtonPrefab;
 
     public Canvas m_menuCanvas;
 
@@ -31,6 +33,28 @@ public class LevelEditor : MonoBehaviour
     {
         CheckSizeLimit(m_widthField);
         CheckSizeLimit(m_heightField);
+
+        if(m_selectedSprite != null)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if(m_map != null)
+                {
+                    Vector3 mousePos = Input.mousePosition;
+                    mousePos.z = 1;
+                    Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePos);
+
+                    MapIndex mapIndex = m_map.WorldPositionToMapIndex(worldPosition);
+
+                    Tile tile = m_map.GetTile(mapIndex);
+
+                    if(tile != null)
+                    {
+                        tile.SetSprite(m_selectedSprite);
+                    }
+                }
+            }
+        }
     }
 
     void CheckSizeLimit(InputField t_field)
@@ -82,12 +106,18 @@ public class LevelEditor : MonoBehaviour
 
         if(sprite != null)
         {
+            if (m_spriteCount == 0)
+            {
+                CreateCancelButton();
+            }
+
             m_spriteCount++;
 
             GameObject tileButton = Instantiate(m_tileSpriteButtonPrefab, m_menuCanvas.transform);
             tileButton.transform.SetParent(m_menuCanvas.transform);
-            tileButton.transform.position += new Vector3(60 * ((m_spriteCount - 1) % 2), -60 * ((m_spriteCount - 1) / 2), 0);
+            tileButton.transform.position += new Vector3(60 * (m_spriteCount % 2), -60 * (m_spriteCount / 2), 0);
             tileButton.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
+            tileButton.GetComponent<Button>().onClick.AddListener(SelectSprite);
 
             m_spriteAddResponse.text = "Sprite Has Been Added!";
             m_spriteAddResponse.color = Color.green;
@@ -97,5 +127,30 @@ public class LevelEditor : MonoBehaviour
             m_spriteAddResponse.text = "Error Sprite Not Found!";
             m_spriteAddResponse.color = Color.red;
         }
+    }
+
+    public void SelectSprite()
+    {
+        GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        Sprite sprite = buttonObject.transform.GetChild(0).GetComponent<Image>().sprite;
+
+        m_selectedSprite = sprite;
+        m_selectedText.text = "SELECTED";
+        m_selectedText.transform.position = buttonObject.transform.position;
+        m_selectedText.transform.SetAsLastSibling();
+    }
+
+    public void DeselectSprite()
+    {
+        m_selectedSprite = null;
+        m_selectedText.text = "";
+        m_selectedText.transform.position = new Vector2(500, 500);
+    }
+
+    public void CreateCancelButton()
+    {
+        GameObject cancelButton = Instantiate(m_cancelButtonPrefab, m_menuCanvas.transform);
+        cancelButton.transform.SetParent(m_menuCanvas.transform);
+        cancelButton.GetComponent<Button>().onClick.AddListener(DeselectSprite);
     }
 }

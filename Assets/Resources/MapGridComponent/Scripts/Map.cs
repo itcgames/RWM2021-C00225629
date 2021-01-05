@@ -290,7 +290,7 @@ public class Map : MonoBehaviour
     /// </summary>
     /// <param name="t_position">The positon on the x and y axis in the game world</param>
     /// <returns>The map index for the passsed in position</returns>
-    MapIndex WorldPositionToMapIndex(Vector2 t_position)
+    public MapIndex WorldPositionToMapIndex(Vector2 t_position)
     {
         MapIndex indexPos = new MapIndex((int)(t_position.x / tileSize), (int)(t_position.y / tileSize));
 
