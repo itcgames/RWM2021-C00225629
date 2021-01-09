@@ -30,14 +30,17 @@ public class Map : MonoBehaviour
     public int m_hight = 0;                 //Number of tiles in a single column of the map.
 
     //2D list of tiles.
-    List<List<Tile>> m_mapGrid = new List<List<Tile>>();
+    List<List<Tile>> m_grid = new List<List<Tile>>();
 
-    //List of gameobjects/enteties that are part of the 2D tile map.
+    //List of gameobjects that are part of the 2D tile map.
     List<GameObject> m_mapEnteties = new List<GameObject>();
 
-    public float tileSize = 0.32f;          //The size of a singular tile in pixels.
+    public float m_tileSize = 0.32f;                        //The size of a singular tile in pixels.
+    
     public List<string> m_charsTag = new List<string>();    //The tags used for entities that move around the map.
     public List<string> m_objectsTag = new List<string>();  //The tags used for enteties that when placed in a tile prevent other entities from ever being added to the tile.
+
+    public bool m_isCreated = false;
 
     /// <summary>
     /// Sets the size of the width and hight of the 2D tile grid.
@@ -94,21 +97,20 @@ public class Map : MonoBehaviour
     /// </summary>
     public void CreateMap()
     {
-        m_mapGrid = new List<List<Tile>>();
+        m_grid = new List<List<Tile>>();
 
-        if (m_mapGrid.Count == 0)
+        for (int x = 0; x < m_width; x++)
         {
-            for (int x = 0; x < m_width; x++)
-            {
-                List<Tile> col = new List<Tile>();
+            List<Tile> col = new List<Tile>();
 
-                for (int y = 0; y < m_hight; y++)
-                {
-                    col.Add(CreateTileObject(new MapIndex(x, y)));
-                }
-                m_mapGrid.Add(col);
+            for (int y = 0; y < m_hight; y++)
+            {
+                col.Add(CreateTileObject(new MapIndex(x, y)));
             }
+            m_grid.Add(col);
         }
+
+        m_isCreated = true;
     }
 
     /// <summary>
@@ -126,7 +128,7 @@ public class Map : MonoBehaviour
 
         //Set the position to corresponding index position. 1 for the z axis is to avoid sprite layers which are destroyed when
         //pushed to github.
-        tileObject.transform.position = new Vector3(tileSize / 2 + t_mapIndex.m_x * tileSize, tileSize / 2 + t_mapIndex.m_y * tileSize, 1);
+        tileObject.transform.position = new Vector3(m_tileSize / 2 + t_mapIndex.m_x * m_tileSize, m_tileSize / 2 + t_mapIndex.m_y * m_tileSize, 1);
         tileObject.AddComponent<SpriteRenderer>();
         tileObject.AddComponent<Tile>();
 
@@ -158,7 +160,7 @@ public class Map : MonoBehaviour
     public int GetTileCount()
     {
         int count = 0;
-        foreach(List<Tile> col in m_mapGrid)
+        foreach(List<Tile> col in m_grid)
         {
             count += col.Count;
         }
@@ -237,10 +239,10 @@ public class Map : MonoBehaviour
                 if (corner.m_x >= 0 && corner.m_x < m_width &&
                     corner.m_y >= 0 && corner.m_y < m_hight)
                 {
-                    if (!m_mapGrid[corner.m_x][corner.m_y].GetEntityList().Contains(t_charEntity))
+                    if (!m_grid[corner.m_x][corner.m_y].GetEntityList().Contains(t_charEntity))
                     {
                         //Check if the tile is traversable.
-                        if (!m_mapGrid[corner.m_x][corner.m_y].GetIsTraversable())
+                        if (!m_grid[corner.m_x][corner.m_y].GetIsTraversable())
                         {
                             //The tile is not traversable and thus collsion has been detected.
                             collisionDetected = true;
@@ -261,13 +263,13 @@ public class Map : MonoBehaviour
                 {
                     if (!newOccupiedTiles.Contains(indexPos))
                     {
-                        m_mapGrid[indexPos.m_x][indexPos.m_y].DeleteEntity(t_charEntity);
+                        m_grid[indexPos.m_x][indexPos.m_y].DeleteEntity(t_charEntity);
                     }
                 }
 
                 foreach (MapIndex indexPos in newOccupiedTiles)
                 {
-                    m_mapGrid[indexPos.m_x][indexPos.m_y].AddEntity(t_charEntity);
+                    m_grid[indexPos.m_x][indexPos.m_y].AddEntity(t_charEntity);
                 }
             }
             else if (outOfBounds)
@@ -292,7 +294,7 @@ public class Map : MonoBehaviour
     /// <returns>The map index for the passsed in position</returns>
     public MapIndex WorldPositionToMapIndex(Vector2 t_position)
     {
-        MapIndex indexPos = new MapIndex((int)(t_position.x / tileSize), (int)(t_position.y / tileSize));
+        MapIndex indexPos = new MapIndex((int)(t_position.x / m_tileSize), (int)(t_position.y / m_tileSize));
 
         //When position goes into negative it is assumed it goes to negative index number 
         //thus it needs to be adjusted.
@@ -309,6 +311,16 @@ public class Map : MonoBehaviour
         return indexPos;
     }
 
+    public Vector2 MapIndexToWorldPos(MapIndex t_mapIndex)
+    {
+        if (!GetIsOutOfBounds(t_mapIndex))
+        {
+            return new Vector2(t_mapIndex.m_x * m_tileSize, t_mapIndex.m_y * m_tileSize);
+        }
+
+        return new Vector2(-500,-500);
+    }
+
     /// <summary>
     /// Gets the list of all the index positions that for the tiles 
     /// that contain the passed in gameobject.
@@ -323,7 +335,7 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < m_hight; y++)
             {
-                if(m_mapGrid[x][y].GetEntityList().Contains(t_entity))
+                if(m_grid[x][y].GetEntityList().Contains(t_entity))
                 {
                     listOccupiedTiles.Add(new MapIndex(x, y));
                 }
@@ -345,7 +357,7 @@ public class Map : MonoBehaviour
     {
         bool success = false;
 
-        List<GameObject> entityList = m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
+        List<GameObject> entityList = m_grid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
 
         foreach (GameObject entity in entityList)
         {
@@ -355,7 +367,7 @@ public class Map : MonoBehaviour
             }
         }
 
-        success = m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].AddEntity(t_entity);
+        success = m_grid[t_tileIndex.m_x][t_tileIndex.m_y].AddEntity(t_entity);
 
         if(success)
         {
@@ -364,7 +376,7 @@ public class Map : MonoBehaviour
             if (m_objectsTag.Contains(t_entity.tag))
             {
                 //The tile now contains an entity of type object meaning a character can no longer enter this tile.
-                m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].SetIsTraversable(false);
+                m_grid[t_tileIndex.m_x][t_tileIndex.m_y].SetIsTraversable(false);
             }
         }
 
@@ -383,7 +395,7 @@ public class Map : MonoBehaviour
     {
         bool success = false;
 
-        success = m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].DeleteEntity(t_entity);
+        success = m_grid[t_tileIndex.m_x][t_tileIndex.m_y].DeleteEntity(t_entity);
 
         if (success)
         {
@@ -391,7 +403,7 @@ public class Map : MonoBehaviour
 
             bool containsObject = false;
 
-            List<GameObject> entityList = m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
+            List<GameObject> entityList = m_grid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
 
             foreach (GameObject entity in entityList)
             {
@@ -404,7 +416,7 @@ public class Map : MonoBehaviour
             //The tile no longer contains an entity of type object meaning a character can enter this tile.
             if(!containsObject)
             {
-                m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].SetIsTraversable(true);
+                m_grid[t_tileIndex.m_x][t_tileIndex.m_y].SetIsTraversable(true);
             }
         }
 
@@ -413,7 +425,7 @@ public class Map : MonoBehaviour
 
     public List<GameObject> GetEntity(MapIndex t_tileIndex)
     {
-        return m_mapGrid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
+        return m_grid[t_tileIndex.m_x][t_tileIndex.m_y].GetEntityList();
     }
 
     public void RemoveEntityFromAllTiles(GameObject t_entity)
@@ -426,16 +438,38 @@ public class Map : MonoBehaviour
         }
     }
 
-    public Tile GetTile(MapIndex m_map)
+    public Tile GetTile(MapIndex t_mapIndex)
     {
-        if (m_map.m_x >= 0 && m_map.m_x < m_width && m_map.m_y >= 0 && m_map.m_y < m_hight)
+        if (!GetIsOutOfBounds(t_mapIndex))
         {
-            return m_mapGrid[m_map.m_x][m_map.m_y];
+            return m_grid[t_mapIndex.m_x][t_mapIndex.m_y];
         }
 
-        else
+        return null;
+    }
+
+    public bool GetIsTileEmpty(MapIndex t_mapIndex)
+    {
+        Tile tile = m_grid[t_mapIndex.m_x][t_mapIndex.m_y];
+
+        if (tile.GetEntityList().Count == 0)
         {
-            return null;
+            return true;
         }
+
+        return false;
+    }
+
+    public bool GetIsOutOfBounds(MapIndex t_mapIndex)
+    {
+        if (t_mapIndex.m_x >= 0 && t_mapIndex.m_x < m_width)
+        {
+            if(t_mapIndex.m_y >= 0 && t_mapIndex.m_y < m_hight)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
