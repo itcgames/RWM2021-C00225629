@@ -472,4 +472,9 @@ public class Map : MonoBehaviour
 
         return true;
     }
+
+    public List<GameObject> GetAllEnteties()
+    {
+        return m_mapEnteties;
+    }
 }

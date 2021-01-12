@@ -8,6 +8,7 @@ public class Tile : MonoBehaviour
     private MapIndex m_indexPos;    //The index position of the tile within the map.
     private List<GameObject> m_entities = new List<GameObject>();   //List of enteties that can be found in this tile.
     private SpriteRenderer m_spriteRenderer = null;                 //Sprite renderer component of the tile object.
+    
     bool m_isTraversable = true;                                    //Bool for if a character entity can enter this tile.
 
     private void Awake()
@@ -116,5 +117,10 @@ public class Tile : MonoBehaviour
     public List<GameObject> GetEntityList()
     {
         return m_entities;
+    }
+
+    public Sprite GetSprite()
+    {
+        return m_spriteRenderer.sprite;
     }
 }

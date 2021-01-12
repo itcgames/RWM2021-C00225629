@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 
-public class FakeMapPrefab
+public class MapPrefabData
 {
     public string m_name;
     public string m_prefabPath;
@@ -33,6 +33,7 @@ public class LevelEditor : MonoBehaviour
     public InputField m_prefabHeightField;
     public InputField m_spriteNameField;
     public InputField m_prefabNameField;
+    public InputField m_saveFileNameField;
 
     public Transform m_cameraTransform;
 
@@ -48,9 +49,10 @@ public class LevelEditor : MonoBehaviour
     public GameObject m_spriteContainer;
 
     Sprite m_selectedSprite;
-    FakeMapPrefab m_selectMapPrefab;
+    MapPrefabData m_selectMapPrefab;
 
-    List<FakeMapPrefab> m_fakeEntities = new List<FakeMapPrefab>();
+    List<MapPrefabData> m_mapPrefabData = new List<MapPrefabData>();
+    List<string> m_spritePaths = new List<string>();
 
     private void Update()
     {
@@ -242,6 +244,8 @@ public class LevelEditor : MonoBehaviour
 
             m_spriteAddResponse.text = "Sprite Has Been Added!";
             m_spriteAddResponse.color = Color.green;
+
+            m_spritePaths.Add(path);
         }
         else
         {
@@ -260,7 +264,7 @@ public class LevelEditor : MonoBehaviour
         {
             string removeType = ".prefab";
 
-            FakeMapPrefab fakeEntity = new FakeMapPrefab();
+            MapPrefabData fakeEntity = new MapPrefabData();
             fakeEntity.m_name = m_prefabNameField.text.Replace(removeType, "");
             fakeEntity.m_prefabPath = path;
             fakeEntity.m_image = loadedPrefab.GetComponent<SpriteRenderer>().sprite;
@@ -284,7 +288,7 @@ public class LevelEditor : MonoBehaviour
             }
 
             CreateMapPrefabButton(fakeEntity);
-            m_fakeEntities.Add(fakeEntity);
+            m_mapPrefabData.Add(fakeEntity);
             m_prefabAddResponse.text = "Prefab Has Been Loaded!";
             m_prefabAddResponse.color = Color.green;
         }
@@ -296,7 +300,7 @@ public class LevelEditor : MonoBehaviour
         }
     }
 
-    public void CreateMapPrefabButton(FakeMapPrefab t_fakeEntity)
+    public void CreateMapPrefabButton(MapPrefabData t_fakeEntity)
     {
         m_prefabCount++;
 
@@ -339,7 +343,7 @@ public class LevelEditor : MonoBehaviour
         }
     }
 
-    public void SelectMapPrefab(FakeMapPrefab t_fakePrefab)
+    public void SelectMapPrefab(MapPrefabData t_fakePrefab)
     {
         GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
@@ -418,5 +422,17 @@ public class LevelEditor : MonoBehaviour
         }
 
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void SaveLevel()
+    {
+        string fileName = m_saveFileNameField.text;
+
+        if(fileName == "")
+        {
+            fileName = "a";
+        }
+
+        LevelSave.SaveLevel(m_map, fileName, m_spritePaths, m_mapPrefabData);
     }
 }
