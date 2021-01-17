@@ -7,7 +7,7 @@ TagManager:
   - Character
   - Object
   - TestLevel
-  - FakeEntity
+  - MapObject
   layers:
   - Default
   - TransparentFX

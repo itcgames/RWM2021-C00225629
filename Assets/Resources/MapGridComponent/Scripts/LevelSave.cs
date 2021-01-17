@@ -11,10 +11,8 @@ public class LevelSaveData
     public List<ListWrapper> m_spriteNames = new List<ListWrapper>();
     public List<string> m_tileSpritePaths = new List<string>();
 
-    public List<SaveMapPrefabData> m_mapPrefabsData = new List<SaveMapPrefabData>();
-    public List<PlacedPrefabData> m_placedMapPrefabs = new List<PlacedPrefabData>();
-
-
+    public List<SaveObjectData> m_objectsData = new List<SaveObjectData>();
+    public List<PlacedObjectData> m_placedObjects = new List<PlacedObjectData>();
 }
 
 [System.Serializable]
@@ -24,7 +22,7 @@ public class ListWrapper
 }
 
 [System.Serializable]
-public class SaveMapPrefabData
+public class SaveObjectData
 {
     public string m_name;
     public string m_prefabPath;
@@ -34,7 +32,7 @@ public class SaveMapPrefabData
 }
 
 [System.Serializable]
-public class PlacedPrefabData
+public class PlacedObjectData
 {
     public string m_name;
     public Vector2 m_position;
@@ -44,13 +42,17 @@ public class LevelSave
 {
     static string m_jsonPath = "C:/Users/Krystian/Desktop/4th Year Project/RWM2021-C00225629/Assets/Resources/MapGridComponent/";
 
-    static public void SaveLevel(Map t_map, string t_fileName, List<string> t_spritePaths, List<MapPrefabData> t_fakeMapPrefabs)
+    static public void SaveLevel(Map t_map, string t_fileName, Dictionary<string, Sprite> t_tileSprites, Dictionary<string, MapObject> t_mapObjects)
     {
         LevelSaveData saveData = new LevelSaveData();
 
         saveData.m_mapWidth = t_map.m_width;
         saveData.m_mapHeight = t_map.m_hight;
-        saveData.m_tileSpritePaths = t_spritePaths;
+
+        foreach (KeyValuePair<string, Sprite> tileSprite in t_tileSprites)
+        {
+            saveData.m_tileSpritePaths.Add(tileSprite.Key);
+        }
 
         for (int x = 0; x < saveData.m_mapWidth; x++)
         {
@@ -64,32 +66,46 @@ public class LevelSave
             saveData.m_spriteNames.Add(col);
         }
 
-        foreach (MapPrefabData mapPrefabData in t_fakeMapPrefabs)
+        foreach (KeyValuePair<string, MapObject> mapObject in t_mapObjects)
         {
-            SaveMapPrefabData saveMapPrefabData = new SaveMapPrefabData();
-            saveMapPrefabData.m_name = mapPrefabData.m_name;
-            saveMapPrefabData.m_prefabPath = mapPrefabData.m_prefabPath;
-            saveMapPrefabData.m_width = mapPrefabData.m_width;
-            saveMapPrefabData.m_height = mapPrefabData.m_height;
+            SaveObjectData saveMapPrefabData = new SaveObjectData();
+            saveMapPrefabData.m_name = mapObject.Value.m_name;
+            saveMapPrefabData.m_prefabPath = mapObject.Value.m_prefabPath;
+            saveMapPrefabData.m_width = mapObject.Value.m_width;
+            saveMapPrefabData.m_height = mapObject.Value.m_height;
 
-            saveData.m_mapPrefabsData.Add(saveMapPrefabData);
+            saveData.m_objectsData.Add(saveMapPrefabData);
         }
 
         List<GameObject> placedPrefabs = t_map.GetAllEnteties();
 
         foreach(GameObject placedPrefab in placedPrefabs)
         {
-            PlacedPrefabData mapPrefab = new PlacedPrefabData();
+            PlacedObjectData mapPrefab = new PlacedObjectData();
 
             mapPrefab.m_name = placedPrefab.name;
             mapPrefab.m_position = placedPrefab.transform.position;
 
-            saveData.m_placedMapPrefabs.Add(mapPrefab);
+            saveData.m_placedObjects.Add(mapPrefab);
         }
 
         string jsonData = JsonUtility.ToJson(saveData, true);
         string fullPath = m_jsonPath + t_fileName + ".json";
 
         System.IO.File.WriteAllText(fullPath, jsonData);
+    }
+
+    static public LevelSaveData LoadLevel(string t_fileName)
+    {
+        string fullPath = m_jsonPath + t_fileName + ".json";
+
+        if (System.IO.File.Exists(fullPath))
+        {
+            LevelSaveData loadedLevel = JsonUtility.FromJson<LevelSaveData>(System.IO.File.ReadAllText(fullPath));
+
+            return loadedLevel;
+        }
+
+        return null;
     }
 }

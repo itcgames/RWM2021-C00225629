@@ -4,170 +4,88 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 
-public class MapPrefabData
-{
-    public string m_name;
-    public string m_prefabPath;
-
-    public Sprite m_image;
-
-    public int m_width;
-    public int m_height;
-}
-
 public class LevelEditor : MonoBehaviour
 {
-    [SerializeField]
-    Map m_map;
+    public MapEditor m_mapEditor;
 
-    int m_mapWidth = 1;
-    int m_mapHeight = 1;
-    int m_spriteCount = 0;
-    int m_prefabCount = 0;
-
-    bool m_removeMapPrefab;
-
+    //Input fields for the dimensions of the map.
     public InputField m_widthField;
     public InputField m_heightField;
-    public InputField m_prefabWidthField;
-    public InputField m_prefabHeightField;
+
+    //Name of the file to load from the project.
     public InputField m_spriteNameField;
-    public InputField m_prefabNameField;
+    public InputField m_objectNameField;
+
+    //Input fields for the width and height of a map object prefab.
+    public InputField m_objectWidthField;
+    public InputField m_objectHeightField;
+
+    //Input field for the name of file to save/load.
     public InputField m_saveFileNameField;
+    public InputField m_loadFileNameField;
 
-    public Transform m_cameraTransform;
+    //Prefabs for the buttons.
+    public GameObject m_tileSpriteButton;
+    public GameObject m_mapObjectButton;
+    public GameObject m_removeObjectButton;
 
-    public Text m_spriteAddResponse;
-    public Text m_prefabAddResponse;
+    //Response text for each load/save screen.
+    public Text m_spriteLoadResponse;
+    public Text m_objectLoadResponse;
+    public Text m_levelSaveResponse;
+    public Text m_levelLoadResponse;
+
+    //Text that appear over the buttons that can alter/add/remove to/form map.
     public Text m_selectedText;
 
-    public GameObject m_tileSpriteButton;
-    public GameObject m_mapPrefabButton;
-    public GameObject m_removeMapPrefabButton;
-
-    public GameObject m_prefabContainer;
+    //Containers for all the add/remove buttons.
+    public GameObject m_objectContainer;
     public GameObject m_spriteContainer;
 
+    //The current sprite that is selected.
     Sprite m_selectedSprite;
-    MapPrefabData m_selectMapPrefab;
 
-    List<MapPrefabData> m_mapPrefabData = new List<MapPrefabData>();
-    List<string> m_spritePaths = new List<string>();
+    //The current map object that is selected.
+    MapObject m_selectedObject;
 
-    private void Update()
+    bool m_removeObjectFromMap;
+
+    void Update()
     {
         CheckSizeLimit(m_widthField);
         CheckSizeLimit(m_heightField);
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (m_map.m_isCreated)
+            if (m_mapEditor.m_map.m_isCreated)
             {
                 Vector3 mousePos = Input.mousePosition;
                 mousePos.z = 1;
                 Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePos);
 
-                MapIndex mapIndex = m_map.WorldPositionToMapIndex(worldPosition);
+                MapIndex mapIndex = m_mapEditor.m_map.WorldPositionToMapIndex(worldPosition);
 
                 if (m_selectedSprite != null)
                 {
-                    ChangeTileSprite(mapIndex);
+                    m_mapEditor.ChangeTileSprite(mapIndex, m_selectedSprite);
                 }
 
-                else if (m_selectMapPrefab != null)
+                else if (m_selectedObject != null)
                 {
-                    PlaceMapPrefab(mapIndex);
+                    PlaceMapObject(mapIndex);
                 }
 
-                else if(m_removeMapPrefab)
+                else if (m_removeObjectFromMap)
                 {
-                    RemoveMapPrefab(mapIndex);
+                    m_mapEditor.RemoveMapObject(mapIndex);
                 }
             }
         }
-    }
-
-    void ChangeTileSprite(MapIndex t_mapIndex)
-    {
-        Tile tile = m_map.GetTile(t_mapIndex);
-
-        if (tile != null)
-        {
-            tile.SetSprite(m_selectedSprite);
-        }
-    }
-
-    void PlaceMapPrefab(MapIndex t_mapIndex)
-    {
-        bool validPlacment = true;
-
-        for (int x = 0; x < m_selectMapPrefab.m_width && validPlacment; x++)
-        {
-            for (int y = 0; y < m_selectMapPrefab.m_height && validPlacment; y++)
-            {
-                if (m_map.GetIsOutOfBounds(new MapIndex(t_mapIndex.m_x + x, t_mapIndex.m_y + y)))
-                {
-                    validPlacment = false;
-                }
-
-                else if (!m_map.GetIsTileEmpty(new MapIndex(t_mapIndex.m_x + x, t_mapIndex.m_y + y)))
-                {
-                    validPlacment = false;
-                }
-            }
-        }
-
-        if (validPlacment)
-        {
-            GameObject gameObject = CreateMapPrefabObject(t_mapIndex);
-
-            for (int x = 0; x < m_selectMapPrefab.m_width && validPlacment; x++)
-            {
-                for (int y = 0; y < m_selectMapPrefab.m_height && validPlacment; y++)
-                {
-                    m_map.AddEntity(new MapIndex(t_mapIndex.m_x + x, t_mapIndex.m_y + y), gameObject);
-                }
-            }
-        }
-    }
-
-    void RemoveMapPrefab(MapIndex t_mapIndex)
-    {
-        if (!m_map.GetIsOutOfBounds(t_mapIndex))
-        {
-            if (!m_map.GetIsTileEmpty(t_mapIndex))
-            {
-                List<GameObject> mapPrefabs = m_map.GetEntity(t_mapIndex);
-
-                GameObject mapPrefab = mapPrefabs[0];
-
-                m_map.RemoveEntityFromAllTiles(mapPrefab);
-
-                Destroy(mapPrefab);
-            }
-        }
-    }
-
-    GameObject CreateMapPrefabObject(MapIndex t_mapIndex)
-    {
-        GameObject gameObject = new GameObject();
-        gameObject.AddComponent<SpriteRenderer>();
-        gameObject.GetComponent<SpriteRenderer>().sprite = m_selectMapPrefab.m_image;
-        gameObject.GetComponent<SpriteRenderer>().spriteSortPoint = SpriteSortPoint.Pivot;
-        gameObject.tag = "FakeEntity";
-        gameObject.name = m_selectMapPrefab.m_name;
-
-        Vector2 positionOffset = new Vector2(m_map.m_tileSize * m_selectMapPrefab.m_width / 2,
-            m_map.m_tileSize * m_selectMapPrefab.m_height / 2);
-
-        gameObject.transform.position = m_map.MapIndexToWorldPos(t_mapIndex) + positionOffset;
-
-        return gameObject;
     }
 
     void CheckSizeLimit(InputField t_field)
     {
-        if(t_field.text != "")
+        if (t_field.text != "")
         {
             if (int.Parse(t_field.text) < 1)
             {
@@ -180,195 +98,170 @@ public class LevelEditor : MonoBehaviour
         }
     }
 
-    public void SetMapSize()
+    void PlaceMapObject(MapIndex t_mapIndex)
     {
-        if(m_map != null)
+        if(m_mapEditor.CheckCanPlaceMapObject(t_mapIndex, m_selectedObject))
         {
-            foreach (Transform child in transform)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
-        if(m_widthField.text == "")
-        {
-            m_mapWidth = 1;
-        }
-        else
-        {
-            m_mapWidth = int.Parse(m_widthField.text);
-        }
-
-        if (m_heightField.text == "")
-        {
-            m_mapHeight = 1;
-        }
-        else
-        {
-            m_mapHeight = int.Parse(m_heightField.text);
-        }
-
-        m_map.SetSize(m_mapWidth, m_mapHeight);
-        m_map.CreateMap();
-
-        Vector3 cameraPos = m_cameraTransform.position;
-
-        cameraPos.x = m_mapWidth / 2.0f * m_map.m_tileSize;
-        cameraPos.y = m_mapHeight / 2.0f * m_map.m_tileSize;
-
-        m_cameraTransform.position = cameraPos;
-    }
-
-    public void ClearAddResponseText()
-    {
-        m_spriteAddResponse.text = "";
-
-        m_prefabAddResponse.text = ""; 
-    }
-
-    public void LoadTileBackground()
-    {
-       string path = "Assets/Resources/MapGridComponent/Sprites/" + m_spriteNameField.text;
-
-       Sprite sprite = AssetDatabase.LoadAssetAtPath(path, typeof(Sprite)) as Sprite;
-
-        if(sprite != null)
-        {
-            m_spriteCount++;
-
-            GameObject tileButton = Instantiate(m_tileSpriteButton, m_spriteContainer.transform);
-            tileButton.transform.SetParent(m_spriteContainer.transform);
-            tileButton.transform.position += new Vector3(60 * ((m_spriteCount - 1) % 2), -60 * ((m_spriteCount - 1) / 2), 0);
-            tileButton.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
-            tileButton.GetComponent<Button>().onClick.AddListener(SelectSprite);
-
-            m_spriteAddResponse.text = "Sprite Has Been Added!";
-            m_spriteAddResponse.color = Color.green;
-
-            m_spritePaths.Add(path);
-        }
-        else
-        {
-            m_spriteAddResponse.text = "Error Sprite Not Found!";
-            m_spriteAddResponse.color = Color.red;
+            m_mapEditor.InstantiateMapObject(t_mapIndex, m_selectedObject);
         }
     }
 
-    public void LoadPrefab()
+    public void CreateMap()
     {
-        string path = "Assets/Resources/MapGridComponent/Prefabs/" + m_prefabNameField.text;
+        int mapWidth = 1;
+        int mapHeight = 1;
 
-        GameObject loadedPrefab = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject)) as GameObject;
-
-        if (loadedPrefab != null)
+        if (m_widthField.text != "")
         {
-            string removeType = ".prefab";
+            mapWidth = int.Parse(m_widthField.text);
+        }
 
-            MapPrefabData fakeEntity = new MapPrefabData();
-            fakeEntity.m_name = m_prefabNameField.text.Replace(removeType, "");
-            fakeEntity.m_prefabPath = path;
-            fakeEntity.m_image = loadedPrefab.GetComponent<SpriteRenderer>().sprite;
+        if (m_heightField.text != "")
+        {
+            mapHeight = int.Parse(m_heightField.text);
+        }
 
-            if (m_prefabWidthField.text != "")
-            {
-                fakeEntity.m_width = int.Parse(m_prefabWidthField.text);
-            }
-            else
-            {
-                fakeEntity.m_width = 1;
-            }
+        m_mapEditor.CreateMap(mapWidth, mapHeight);
+    }
 
-            if (m_prefabHeightField.text != "")
-            {
-                fakeEntity.m_height = int.Parse(m_prefabHeightField.text);
-            }
-            else
-            {
-                fakeEntity.m_height = 1;
-            }
+    public void ClearResponseTexts()
+    {
+        m_spriteLoadResponse.text = "";
+        m_objectLoadResponse.text = "";
+        m_levelSaveResponse.text = "";
+        m_levelLoadResponse.text = "";
+    }
 
-            CreateMapPrefabButton(fakeEntity);
-            m_mapPrefabData.Add(fakeEntity);
-            m_prefabAddResponse.text = "Prefab Has Been Loaded!";
-            m_prefabAddResponse.color = Color.green;
+    public void LoadMapObject()
+    {
+        string fileName = m_objectNameField.text;
+        
+        int width = 1;
+        int height = 1;
+
+        if (m_objectWidthField.text != "")
+        {
+            width = int.Parse(m_objectWidthField.text);
+        }
+
+        if (m_objectHeightField.text != "")
+        {
+            height = int.Parse(m_objectHeightField.text);
+        }
+
+        if(m_mapEditor.LoadMapObject(fileName, width, height))
+        {
+            m_objectLoadResponse.text = "Prefab Has Been Loaded!";
+            m_objectLoadResponse.color = Color.green;
+
+            CreateObjectButton(m_mapEditor.m_mapObjects[fileName]);
+        }
+        else
+        {
+            m_objectLoadResponse.text = "Error Prefab Not Found!";
+            m_objectLoadResponse.color = Color.red;
+        }
+    }
+
+    public void LoadTileSprite()
+    {
+        string path = "Assets/Resources/MapGridComponent/Sprites/" + m_spriteNameField.text;
+
+        if (m_mapEditor.LoadtTileSprite(path))
+        {
+            m_spriteLoadResponse.text = "Sprite Has Been Added!";
+            m_spriteLoadResponse.color = Color.green;
+
+            CreateSpriteButton(path);
         }
 
         else
         {
-            m_prefabAddResponse.text = "Error Prefab Not Found!";
-            m_prefabAddResponse.color = Color.red;
+            m_spriteLoadResponse.text = "Error Failed To Load Sprite";
+            m_spriteLoadResponse.color = Color.red;
         }
     }
 
-    public void CreateMapPrefabButton(MapPrefabData t_fakeEntity)
+    public void CreateSpriteButton(string t_path)
     {
-        m_prefabCount++;
+        Sprite sprite = m_mapEditor.m_tileSprites[t_path];
 
-        if(m_prefabCount == 1)
+        int spriteCount = m_mapEditor.m_tileSprites.Count;
+
+        GameObject tileButton = Instantiate(m_tileSpriteButton, m_spriteContainer.transform);
+        tileButton.transform.SetParent(m_spriteContainer.transform);
+        tileButton.transform.position += new Vector3(60 * ((spriteCount - 1) % 2), -60 * ((spriteCount - 1) / 2), 0);
+        tileButton.transform.GetChild(0).GetComponent<Image>().sprite = sprite;
+        tileButton.GetComponent<Button>().onClick.AddListener(SelectSprite);
+    }
+
+    public void CreateObjectButton(MapObject t_mapObject)
+    {
+        int objectCount = m_mapEditor.m_mapObjects.Count;
+
+        if (objectCount == 1)
         {
-            CreateRemoveMapPrefabButton();
+            CreateRemoveObjectButton();
         }
 
-        GameObject prefabButton = Instantiate(m_mapPrefabButton, m_prefabContainer.transform);
-        prefabButton.transform.SetParent(m_prefabContainer.transform);
-        prefabButton.transform.position += new Vector3(60 * (m_prefabCount  % 2), -70 * (m_prefabCount / 2), 0);
-        prefabButton.transform.GetChild(0).GetComponent<Image>().sprite = t_fakeEntity.m_image;
-        prefabButton.transform.GetChild(1).GetComponent<Text>().text = t_fakeEntity.m_width + "x" + t_fakeEntity.m_height;
-        prefabButton.GetComponent<Button>().onClick.AddListener(() => SelectMapPrefab(t_fakeEntity));
+        GameObject prefabButton = Instantiate(m_mapObjectButton, m_objectContainer.transform);
+        prefabButton.transform.SetParent(m_objectContainer.transform);
+        prefabButton.transform.position += new Vector3(60 * (objectCount % 2), -70 * (objectCount / 2), 0);
+        prefabButton.transform.GetChild(0).GetComponent<Image>().sprite = t_mapObject.m_image;
+        prefabButton.transform.GetChild(1).GetComponent<Text>().text = t_mapObject.m_width + "x" + t_mapObject.m_height;
+        prefabButton.GetComponent<Button>().onClick.AddListener(() => SelectMapObject(t_mapObject));
     }
 
-    public void CreateRemoveMapPrefabButton()
+    void CreateRemoveObjectButton()
     {
-        GameObject removeMapPrefabButton = Instantiate(m_removeMapPrefabButton, m_prefabContainer.transform);
-        removeMapPrefabButton.transform.SetParent(m_prefabContainer.transform);
-        removeMapPrefabButton.GetComponent<Button>().onClick.AddListener(SelectRemoveMapPrefab);
+        GameObject removeObjectButtom = Instantiate(m_removeObjectButton, m_objectContainer.transform);
+        removeObjectButtom.transform.SetParent(m_objectContainer.transform);
+        removeObjectButtom.GetComponent<Button>().onClick.AddListener(SelectRemoveMapObject);
     }
 
-    public void SelectRemoveMapPrefab()
+    void SelectMapObject(MapObject t_mapObject)
     {
         GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
-        if (!m_removeMapPrefab)
+        if (t_mapObject != m_selectedObject)
         {
-            m_removeMapPrefab = true;
-            m_selectMapPrefab = null;
+            m_selectedObject = t_mapObject;
+            m_removeObjectFromMap = false;
             m_selectedText.text = "SELECTED";
             m_selectedText.transform.position = buttonObject.transform.position;
             m_selectedText.transform.SetAsLastSibling();
+            return;
         }
-        else
-        {
-            DeselectAll();
-        }
+
+        DeselectAll();
     }
 
-    public void SelectMapPrefab(MapPrefabData t_fakePrefab)
+    void SelectRemoveMapObject()
     {
         GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
 
-        if (t_fakePrefab != m_selectMapPrefab)
+        if (!m_removeObjectFromMap)
         {
-            m_selectMapPrefab = t_fakePrefab;
-            m_removeMapPrefab = false;
+            m_removeObjectFromMap = true;
+            m_selectedObject = null;
             m_selectedText.text = "SELECTED";
             m_selectedText.transform.position = buttonObject.transform.position;
             m_selectedText.transform.SetAsLastSibling();
+            return;
         }
-        else
-        {
-            DeselectAll();
-        }
+
+        DeselectAll();
     }
 
-    public void SelectSprite()
+    void SelectSprite()
     {
         GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
         Sprite sprite = buttonObject.transform.GetChild(0).GetComponent<Image>().sprite;
 
-        if(sprite != m_selectedSprite)
+        if (sprite != m_selectedSprite)
         {
             m_selectedSprite = sprite;
             m_selectedText.text = "SELECTED";
@@ -381,20 +274,52 @@ public class LevelEditor : MonoBehaviour
         }
     }
 
-    public void DeselectAll()
+    public void SaveLevel()
     {
-        m_selectedSprite = null;
-        m_selectMapPrefab = null;
-        m_selectedText.text = "";
-        m_removeMapPrefab = false;
-        m_selectedText.transform.position = new Vector2(500, 500);
+        string fileName = m_saveFileNameField.text;
+
+        if (fileName == "")
+        {
+            fileName = "levelSave";
+        }
+
+        if(m_mapEditor.SaveLevel(fileName))
+        {
+            m_levelSaveResponse.text = "File Saved Successfully!";
+            m_levelSaveResponse.color = Color.green;
+        }
+
+        else
+        {
+            m_levelSaveResponse.text = "Error File Failed To Save!";
+            m_levelSaveResponse.color = Color.red;
+        }
+    }
+
+    public void LoadLevel()
+    {
+        ClearAllData();
+
+        string fileName = m_loadFileNameField.text;
+
+        if(m_mapEditor.LoadLevel(fileName, false))
+        {
+            m_levelLoadResponse.text = "File Loaded Successfully!";
+            m_levelLoadResponse.color = Color.green;
+        }
+
+        else
+        {
+            m_levelLoadResponse.text = "Error File Failed To Load!";
+            m_levelLoadResponse.color = Color.red;
+        }
     }
 
     public void ShowSprites()
     {
-        m_prefabContainer.SetActive(false);
+        m_objectContainer.SetActive(false);
 
-        if(m_spriteContainer.activeSelf == false)
+        if (m_spriteContainer.activeSelf == false)
         {
             m_spriteContainer.SetActive(true);
             DeselectAll();
@@ -407,32 +332,44 @@ public class LevelEditor : MonoBehaviour
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
     }
 
-    public void ShowMapPrefabs()
+    public void ShowMapObjects()
     {
         m_spriteContainer.SetActive(false);
 
-        if (m_prefabContainer.activeSelf == false)
+        if (m_objectContainer.activeSelf == false)
         {
-            m_prefabContainer.SetActive(true);
+            m_objectContainer.SetActive(true);
             DeselectAll();
         }
         else
         {
-            m_prefabContainer.SetActive(false);
+            m_objectContainer.SetActive(false);
         }
 
         UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
     }
 
-    public void SaveLevel()
+    public void DeselectAll()
     {
-        string fileName = m_saveFileNameField.text;
+        m_selectedSprite = null;
+        m_selectedObject = null;
+        m_selectedText.text = "";
+        m_removeObjectFromMap = false;
+        m_selectedText.transform.position = new Vector2(500, 500);
+    }
 
-        if(fileName == "")
+    public void ClearAllData()
+    {
+        while (m_spriteContainer.transform.childCount != 0)
         {
-            fileName = "a";
+            DestroyImmediate(m_spriteContainer.transform.GetChild(0).gameObject);
         }
 
-        LevelSave.SaveLevel(m_map, fileName, m_spritePaths, m_mapPrefabData);
+        while (m_objectContainer.transform.childCount != 0)
+        {
+            DestroyImmediate(m_objectContainer.transform.GetChild(0).gameObject);
+        }
+
+        m_mapEditor.ClearAllData();
     }
 }
