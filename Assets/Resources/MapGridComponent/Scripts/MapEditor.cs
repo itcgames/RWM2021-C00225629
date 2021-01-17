@@ -6,24 +6,36 @@ using UnityEditor;
 
 public class MapObject
 {
-    public string m_name;
-    public string m_prefabPath;
+    public string m_name;           //Name of the object.
+    public string m_prefabPath;     //Path to the prefab used to create this map object.
 
-    public Sprite m_image;
+    public Sprite m_image;          //The image used by the original prefab.
 
-    public int m_width;
-    public int m_height;
+    public int m_width;             //The width in tiles of the prefab.
+    public int m_height;            //The height in tiles of the prefab.
 }
 
 public class MapEditor : MonoBehaviour
 {
+    //The level editor script that displays the data in map editor. Only used in Level Editor scene.
     public LevelEditor m_levelEditor;
 
+    //The map in which will be affected and all objects will be placed into.
     public Map m_map;
 
+    [HideInInspector]
+    //Dictionary of map object that can be easily accessed using the name of the map object.
     public Dictionary<string, MapObject> m_mapObjects = new Dictionary<string, MapObject>();
+
+    [HideInInspector]
+    //Dictionary of sprites that can be easily accessed using the name of the sprite.
     public Dictionary<string, Sprite> m_tileSprites = new Dictionary<string, Sprite>();
 
+    /// <summary>
+    /// Changes the sprite of the Tile at the passed in map index posiiton.
+    /// </summary>
+    /// <param name="t_mapIndex">The map index position of the Tile to change</param>
+    /// <param name="t_sprite">The new sprite to which the Tile will be set to</param>
     public void ChangeTileSprite(MapIndex t_mapIndex, Sprite t_sprite)
     {
         Tile tile = m_map.GetTile(t_mapIndex);
@@ -34,6 +46,14 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if a map object can be placed in the area starting with the passed
+    /// map index position as the bottom left corent of the map object if it bigger
+    /// that a 1x1 size.
+    /// </summary>
+    /// <param name="t_mapIndex">The map index position for the Tile to be check first</param>
+    /// <param name="t_mapObject">The map object for which we want to check if it can be placed</param>
+    /// <returns>bool for if the map object can be placed at the passed in location</returns>
     public bool CheckCanPlaceMapObject(MapIndex t_mapIndex, MapObject t_mapObject)
     {
         for (int x = 0; x < t_mapObject.m_width; x++)
@@ -55,6 +75,11 @@ public class MapEditor : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Removes an map object from a Tile at the passed in map index position.
+    /// If an object is found it that Tile it is removed from all tiles and destoryed.
+    /// </summary>
+    /// <param name="t_mapIndex">The map index position of the Tile we want to remove object from</param>
     public void RemoveMapObject(MapIndex t_mapIndex)
     {
         if (!m_map.GetIsOutOfBounds(t_mapIndex))
@@ -72,6 +97,12 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates a Gameobject instance of the map object using the sprite it contains.
+    /// This Gameobject does not other than serve as a visual representation for the user.
+    /// </summary>
+    /// <param name="t_startMapIndex">The start index position of the Tile where the Gameobject will be created</param>
+    /// <param name="t_mapObject">The map object who's data will be used to create Gameobject</param>
     public void InstantiateMapObject(MapIndex t_startMapIndex, MapObject t_mapObject)
     {
         GameObject gameObject = new GameObject();
@@ -95,6 +126,14 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Instanciates the a prefab of a Gameobject using the path from the map object.
+    /// The instants of the prefab will behave as normal and will be centred starthing with
+    /// the passed in map index position as the bottom left corner based on the deimensions
+    /// with the map object.
+    /// </summary>
+    /// <param name="t_startMapIndex">The start index position of the Tile where the Gameobject will be created</param>
+    /// <param name="t_mapObject">The map object who's data will be used to create Gameobject</param>
     public void InstantiateRealObject(MapIndex t_startMapIndex, MapObject t_mapObject)
     {
         GameObject loadedObject = AssetDatabase.LoadAssetAtPath(t_mapObject.m_prefabPath, typeof(GameObject)) as GameObject;
@@ -113,16 +152,24 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates a new instance of map using the passed width and height
+    /// as its dimensions and centering the camera. If there was a map already
+    /// created it deletes all the mapObject that could exist in the scene and
+    /// all the Tile objects from the previous map.
+    /// </summary>
+    /// <param name="t_mapWidth">The width of the new map</param>
+    /// <param name="t_mapHeight">The height of the new map</param>
     public void CreateMap(int t_mapWidth, int t_mapHeight)
     {
         if (m_map != null)
         {
-            GameObject[] prefabs = GameObject.FindGameObjectsWithTag("MapObject");
+            GameObject[] mapObjects = GameObject.FindGameObjectsWithTag("MapObject");
 
-            for (int i = 0; i < prefabs.Length; i++)
+            for (int i = 0; i < mapObjects.Length; i++)
             {
-                m_map.RemoveEntityFromAllTiles(prefabs[i]);
-                Destroy(prefabs[i]);
+                m_map.RemoveEntityFromAllTiles(mapObjects[i]);
+                Destroy(mapObjects[i]);
             }
 
             foreach (Transform child in transform)
@@ -142,6 +189,13 @@ public class MapEditor : MonoBehaviour
         Camera.main.transform.position = cameraPos;
     }
 
+    /// <summary>
+    /// Loads the sprite from the project. 
+    /// If there is already a sprite within the dictioanry that has the same path
+    /// or the sprite fails to load it returns false otherwise it returns true.
+    /// </summary>
+    /// <param name="t_spritePath">The path to destination of the sprite to load</param>
+    /// <returns>Bool for the sprite was loaded succesfuly</returns>
     public bool LoadtTileSprite(string t_spritePath)
     {
         if(!m_tileSprites.ContainsKey(t_spritePath))
@@ -159,6 +213,16 @@ public class MapEditor : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Loads in a prefab using the passed in name fromthe prefab folder.
+    /// If that does not already exist with the dictionary and the prefab is loaded succesfuly
+    /// a map object is created using the data from the prefab and true is returned.
+    /// Other false is returned and no new map object is created.
+    /// </summary>
+    /// <param name="t_fileName">The name of the prefab to be loaded from the prefab folder</param>
+    /// <param name="t_width">The width of the map object in tiles</param>
+    /// <param name="t_height">The height of th map object in tiles</param>
+    /// <returns>Bool for the prefab was loaded and map object was created</returns>
     public bool LoadMapObject(string t_fileName, int t_width, int t_height)
     {
         string path = "Assets/Resources/MapGridComponent/Prefabs/" + t_fileName + ".prefab";
@@ -185,6 +249,11 @@ public class MapEditor : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Save all the data from the map editor to ajson file.
+    /// </summary>
+    /// <param name="t_fileName">The name of the file in which the data will be saved</param>
+    /// <returns>Bool for if the file was save succesfully</returns>
     public bool SaveLevel(string t_fileName)
     {
         LevelSave.SaveLevel(m_map, t_fileName, m_tileSprites, m_mapObjects);
@@ -192,6 +261,16 @@ public class MapEditor : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Loads in the data from the a file who's name matches the passed in
+    /// name. If the file fails to load false is returned otherwise the
+    /// map editor data is populated. If the level editor is not null its
+    /// UI data is populated. If the passed in bool is true then the real 
+    /// prefabs are instanciated within the scene instead of the map objects.
+    /// </summary>
+    /// <param name="t_fileName">The name of the file that is to be loaded</param>
+    /// <param name="t_loadRealObjects">Bool for it the original prefabs should be placed or the fake ones</param>
+    /// <returns>Bool for if the file was loaded succesfuly or not</returns>
     public bool LoadLevel(string t_fileName, bool t_loadRealObjects)
     {
         if (t_fileName != "")
@@ -215,7 +294,7 @@ public class MapEditor : MonoBehaviour
 
                 for (int x = 0; x < saveData.m_spriteNames.Count; x++)
                 {
-                    ListWrapper wrapperClass = saveData.m_spriteNames[x];
+                    ColumnWrapper wrapperClass = saveData.m_spriteNames[x];
 
                     for (int y = 0; y < wrapperClass.m_spriteNames.Count; y++)
                     {
@@ -278,6 +357,9 @@ public class MapEditor : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Clears all data that is attached to the map editor.
+    /// </summary>
     public void ClearAllData()
     {
         m_tileSprites = new Dictionary<string, Sprite>();

@@ -6,6 +6,7 @@ using UnityEditor;
 
 public class LevelEditor : MonoBehaviour
 {
+    //Map Editor used to alter the displayed map.
     public MapEditor m_mapEditor;
 
     //Input fields for the dimensions of the map.
@@ -48,6 +49,8 @@ public class LevelEditor : MonoBehaviour
     //The current map object that is selected.
     MapObject m_selectedObject;
 
+    //Bool for if when the user clicks there should be an attempt to remove object
+    //at that location.
     bool m_removeObjectFromMap;
 
     void Update()

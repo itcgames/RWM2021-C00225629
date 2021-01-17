@@ -5,18 +5,24 @@ using UnityEngine;
 [System.Serializable]
 public class LevelSaveData
 {
-    public int m_mapWidth;
-    public int m_mapHeight;
+    public int m_mapWidth;  //The width of the map.
+    public int m_mapHeight; //The height of the map.
 
-    public List<ListWrapper> m_spriteNames = new List<ListWrapper>();
+    //List of columns of the names of the sprites used for each tile with the map.
+    public List<ColumnWrapper> m_spriteNames = new List<ColumnWrapper>();
+
+    //List of all the sprite paths used for the sprites with the level.
     public List<string> m_tileSpritePaths = new List<string>();
 
+    //List of the diffrent map objects used with the level editor.
     public List<SaveObjectData> m_objectsData = new List<SaveObjectData>();
+
+    //List of all the Gameobject that have been placed.
     public List<PlacedObjectData> m_placedObjects = new List<PlacedObjectData>();
 }
 
 [System.Serializable]
-public class ListWrapper
+public class ColumnWrapper
 {
     public List<string> m_spriteNames = new List<string>();
 }
@@ -40,7 +46,7 @@ public class PlacedObjectData
 
 public class LevelSave
 {
-    static string m_jsonPath = "C:/Users/Krystian/Desktop/4th Year Project/RWM2021-C00225629/Assets/Resources/MapGridComponent/";
+    static string s_jsonPath = "C:/Users/Krystian/Desktop/4th Year Project/RWM2021-C00225629/Assets/Resources/MapGridComponent/";
 
     static public void SaveLevel(Map t_map, string t_fileName, Dictionary<string, Sprite> t_tileSprites, Dictionary<string, MapObject> t_mapObjects)
     {
@@ -56,7 +62,7 @@ public class LevelSave
 
         for (int x = 0; x < saveData.m_mapWidth; x++)
         {
-            ListWrapper col = new ListWrapper();
+            ColumnWrapper col = new ColumnWrapper();
 
             for (int y = 0; y < saveData.m_mapHeight; y++)
             {
@@ -90,14 +96,14 @@ public class LevelSave
         }
 
         string jsonData = JsonUtility.ToJson(saveData, true);
-        string fullPath = m_jsonPath + t_fileName + ".json";
+        string fullPath = s_jsonPath + t_fileName + ".json";
 
         System.IO.File.WriteAllText(fullPath, jsonData);
     }
 
     static public LevelSaveData LoadLevel(string t_fileName)
     {
-        string fullPath = m_jsonPath + t_fileName + ".json";
+        string fullPath = s_jsonPath + t_fileName + ".json";
 
         if (System.IO.File.Exists(fullPath))
         {
