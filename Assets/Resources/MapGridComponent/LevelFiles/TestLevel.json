@@ -1,0 +1,282 @@
+{
+    "m_mapWidth": 17,
+    "m_mapHeight": 11,
+    "m_spriteNames": [
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Wall",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        }
+    ],
+    "m_tileSpritePaths": [
+        "MapGridComponent/Sprites/Tile",
+        "MapGridComponent/Sprites/Wall"
+    ],
+    "m_objectsData": [
+        {
+            "m_name": "TestObject",
+            "m_prefabPath": "MapGridComponent/Prefabs/TestObject",
+            "m_width": 2,
+            "m_height": 1
+        }
+    ],
+    "m_placedObjects": [
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 0.9599999189376831,
+                "y": 0.47999998927116396
+            }
+        }
+    ]
+}

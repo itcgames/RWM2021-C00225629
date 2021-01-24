@@ -150,7 +150,7 @@ public class Map : MonoBehaviour
     /// <returns>The string to the spirte asset location within the resources folder</returns>
     string LoadTileSprite(MapIndex t_mapIndex)
     {
-        return "Assets/Resources/MapGridComponent/Sprites/tile.png"; ;
+        return "MapGridComponent/Sprites/Tile";
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public class Map : MonoBehaviour
     {
         if (!GetIsOutOfBounds(t_mapIndex))
         {
-            return new Vector2(t_mapIndex.m_x * m_tileSize, t_mapIndex.m_y * m_tileSize);
+            return new Vector2(t_mapIndex.m_x * m_tileSize + m_tileSize / 2, t_mapIndex.m_y * m_tileSize + m_tileSize / 2);
         }
 
         return new Vector2(-500,-500);

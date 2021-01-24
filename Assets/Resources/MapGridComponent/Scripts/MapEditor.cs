@@ -112,8 +112,8 @@ public class MapEditor : MonoBehaviour
         gameObject.tag = "MapObject";
         gameObject.name = t_mapObject.m_name;
 
-        Vector2 positionOffset = new Vector2(m_map.m_tileSize * t_mapObject.m_width / 2,
-            m_map.m_tileSize * t_mapObject.m_height / 2);
+        Vector2 positionOffset = new Vector2(m_map.m_tileSize * (t_mapObject.m_width - 1) / 2,
+           m_map.m_tileSize * (t_mapObject.m_height - 1) / 2);
 
         gameObject.transform.position = m_map.MapIndexToWorldPos(t_startMapIndex) + positionOffset;
 
@@ -136,10 +136,10 @@ public class MapEditor : MonoBehaviour
     /// <param name="t_mapObject">The map object who's data will be used to create Gameobject</param>
     public void InstantiateRealObject(MapIndex t_startMapIndex, MapObject t_mapObject)
     {
-        GameObject loadedObject = AssetDatabase.LoadAssetAtPath(t_mapObject.m_prefabPath, typeof(GameObject)) as GameObject;
+        GameObject loadedObject = Resources.Load(t_mapObject.m_prefabPath, typeof(GameObject)) as GameObject;
 
-        Vector2 positionOffset = new Vector2(m_map.m_tileSize * t_mapObject.m_width / 2,
-           m_map.m_tileSize * t_mapObject.m_height / 2);
+        Vector2 positionOffset = new Vector2(m_map.m_tileSize * (t_mapObject.m_width - 1) / 2,
+            m_map.m_tileSize * (t_mapObject.m_height - 1) / 2);
 
         loadedObject.transform.position = m_map.MapIndexToWorldPos(t_startMapIndex) + positionOffset;
 
@@ -181,12 +181,15 @@ public class MapEditor : MonoBehaviour
         m_map.SetSize(t_mapWidth, t_mapHeight);
         m_map.CreateMap();
 
-        Vector3 cameraPos = Camera.main.transform.position;
+        if(Camera.main != null)
+        {
+            Vector3 cameraPos = Camera.main.transform.position;
 
-        cameraPos.x = t_mapWidth / 2.0f * m_map.m_tileSize;
-        cameraPos.y = t_mapHeight / 2.0f * m_map.m_tileSize;
+            cameraPos.x = t_mapWidth / 2.0f * m_map.m_tileSize;
+            cameraPos.y = t_mapHeight / 2.0f * m_map.m_tileSize;
 
-        Camera.main.transform.position = cameraPos;
+            Camera.main.transform.position = cameraPos;
+        }
     }
 
     /// <summary>
@@ -200,7 +203,7 @@ public class MapEditor : MonoBehaviour
     {
         if(!m_tileSprites.ContainsKey(t_spritePath))
         {
-            Sprite sprite = AssetDatabase.LoadAssetAtPath(t_spritePath, typeof(Sprite)) as Sprite;
+            Sprite sprite = Resources.Load<Sprite>(t_spritePath);
 
             if (sprite != null)
             {
@@ -225,11 +228,11 @@ public class MapEditor : MonoBehaviour
     /// <returns>Bool for the prefab was loaded and map object was created</returns>
     public bool LoadMapObject(string t_fileName, int t_width, int t_height)
     {
-        string path = "Assets/Resources/MapGridComponent/Prefabs/" + t_fileName + ".prefab";
+        string path = "MapGridComponent/Prefabs/" + t_fileName;
 
-        GameObject mapObjectLoaded = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject)) as GameObject;
+        GameObject mapObjectLoaded = Resources.Load<GameObject>(path);
 
-        if(!m_mapObjects.ContainsKey(t_fileName))
+        if (!m_mapObjects.ContainsKey(t_fileName))
         {
             if (mapObjectLoaded != null)
             {
@@ -333,8 +336,8 @@ public class MapEditor : MonoBehaviour
 
                         Vector2 position = saveData.m_placedObjects[i].m_position;
 
-                        position.x = position.x - (mapObject.m_width * m_map.m_tileSize) / 2;
-                        position.y = position.y - (mapObject.m_height * m_map.m_tileSize) / 2;
+                        position.x = position.x - ((mapObject.m_width - 1) * m_map.m_tileSize) / 2;
+                        position.y = position.y - ((mapObject.m_height - 1) * m_map.m_tileSize) / 2;
 
                         MapIndex mapIndex = m_map.WorldPositionToMapIndex(position);
 

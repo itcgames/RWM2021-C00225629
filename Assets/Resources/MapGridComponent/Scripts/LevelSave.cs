@@ -46,7 +46,7 @@ public class PlacedObjectData
 
 public class LevelSave
 {
-    static string s_jsonPath = "C:/Users/Krystian/Desktop/4th Year Project/RWM2021-C00225629/Assets/Resources/MapGridComponent/";
+    static string s_jsonPath = Application.dataPath + "/Resources/MapGridComponent/LevelFiles/";
 
     static public void SaveLevel(Map t_map, string t_fileName, Dictionary<string, Sprite> t_tileSprites, Dictionary<string, MapObject> t_mapObjects)
     {
@@ -103,11 +103,13 @@ public class LevelSave
 
     static public LevelSaveData LoadLevel(string t_fileName)
     {
-        string fullPath = s_jsonPath + t_fileName + ".json";
+        string fullPath = "MapGridComponent/LevelFiles/" + t_fileName;
 
-        if (System.IO.File.Exists(fullPath))
+        TextAsset loadFile = Resources.Load<TextAsset>(fullPath);
+
+        if (loadFile != null)
         {
-            LevelSaveData loadedLevel = JsonUtility.FromJson<LevelSaveData>(System.IO.File.ReadAllText(fullPath));
+            LevelSaveData loadedLevel = JsonUtility.FromJson<LevelSaveData>(loadFile.text);
 
             return loadedLevel;
         }

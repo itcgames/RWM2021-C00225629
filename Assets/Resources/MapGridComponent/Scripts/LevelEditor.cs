@@ -168,7 +168,7 @@ public class LevelEditor : MonoBehaviour
 
     public void LoadTileSprite()
     {
-        string path = "Assets/Resources/MapGridComponent/Sprites/" + m_spriteNameField.text;
+        string path = "MapGridComponent/Sprites/" + m_spriteNameField.text;
 
         if (m_mapEditor.LoadtTileSprite(path))
         {

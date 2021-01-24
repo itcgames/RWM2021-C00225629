@@ -25,7 +25,7 @@ public class Tile : MonoBehaviour
     {
         if (m_spriteRenderer != null)
         {
-            m_spriteRenderer.sprite = AssetDatabase.LoadAssetAtPath(t_spritePath, typeof(Sprite)) as Sprite;
+            m_spriteRenderer.sprite = Resources.Load(t_spritePath, typeof(Sprite)) as Sprite;
         }
     }
 

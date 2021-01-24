@@ -1,0 +1,222 @@
+{
+    "m_mapWidth": 10,
+    "m_mapHeight": 10,
+    "m_spriteNames": [
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        },
+        {
+            "m_spriteNames": [
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile",
+                "Tile"
+            ]
+        }
+    ],
+    "m_tileSpritePaths": [
+        "MapGridComponent/Sprites/Tile"
+    ],
+    "m_objectsData": [
+        {
+            "m_name": "TestObject",
+            "m_prefabPath": "MapGridComponent/Prefabs/TestObject",
+            "m_width": 1,
+            "m_height": 1
+        }
+    ],
+    "m_placedObjects": [
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 0.1599999964237213,
+                "y": 0.1599999964237213
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 0.47999998927116396,
+                "y": 0.1599999964237213
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 0.7999999523162842,
+                "y": 0.1599999964237213
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 1.4399999380111695,
+                "y": 0.1599999964237213
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 2.0799999237060549,
+                "y": 1.4399999380111695
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 1.1200000047683716,
+                "y": 2.3999998569488527
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 2.3999998569488527,
+                "y": 3.0399999618530275
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 3.0399999618530275,
+                "y": 1.4399999380111695
+            }
+        },
+        {
+            "m_name": "TestObject",
+            "m_position": {
+                "x": 2.3999998569488527,
+                "y": 0.1599999964237213
+            }
+        }
+    ]
+}
